@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Contactemp</string>
-    <string name="string">This is a testing text</string>
+    <string name="mainString">Elige un contacto para hacerlo temporal</string>
 </resources>
