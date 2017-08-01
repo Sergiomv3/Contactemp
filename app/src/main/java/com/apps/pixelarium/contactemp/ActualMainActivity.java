@@ -2,18 +2,16 @@ package com.apps.pixelarium.contactemp;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.constraint.ConstraintLayout;
-import android.app.LoaderManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
@@ -23,23 +21,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class ActualMainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+import java.util.ArrayList;
 
-    // This is the Adapter being used to display the list's data
-    CursorAdapter mAdapter;
-
-    // These are the Contacts rows that we will retrieve
-    static final String[] PROJECTION = new String[] {ContactsContract.CommonDataKinds.Phone._ID,
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
-
-    // This is the select criteria
-    static final String SELECTION = "((" +
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " NOTNULL) AND (" +
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " != '' ))";
+public class ActualMainActivity extends Activity {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private boolean permissionGranted = false;
-
+    private ArrayList<DataModel> alContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +34,6 @@ public class ActualMainActivity extends Activity implements LoaderManager.Loader
         setContentView(R.layout.activity_actual_main);
 
         loadContacts();
-
-
 
     }
 
@@ -64,44 +49,29 @@ public class ActualMainActivity extends Activity implements LoaderManager.Loader
     }
 
     private void readContacts() {
-        // Create a progress bar to display while the list loads
-        ProgressBar progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT));
-        progressBar.setIndeterminate(true);
-        ListView list = (ListView)findViewById(R.id.list);
+        ContentResolver cr = this.getContentResolver(); //Activity/Application android.content.Context
+        Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        if(cursor.moveToFirst())
+        {
+            alContacts = new ArrayList<DataModel>();
+            do
+            {
+                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 
-        list.setEmptyView(progressBar);
-
-        // Must add the progress bar to the root of the layout
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-        root.addView(progressBar);
-
-        // For the cursor adapter, specify which columns go into which views
-        String[] fromColumns = {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
-        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
-
-        // Create an empty adapter we will use to display the loaded data.
-        // We pass null for the cursor, then update it in onLoadFinished()
-        mAdapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_1, null,
-                fromColumns, toViews, 0);
-        list.setAdapter(mAdapter);
-
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(0, null, (LoaderManager.LoaderCallbacks<Cursor>) this);
-
-        list.setOnItemClickListener(
-                new AdapterView.OnItemClickListener()
+                if(Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
                 {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        Toast.makeText(getApplicationContext(), "has pulsado en un elemento",Toast.LENGTH_LONG).show();
+                    Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
+                    while (pCur.moveToNext())
+                    {
+                        DataModel e = new DataModel(pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)), pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                        alContacts.add(e);
+                        break;
                     }
-
+                    pCur.close();
                 }
-        );
+
+            } while (cursor.moveToNext()) ;
+        }
     }
 
     private void requestPermission() {
@@ -135,31 +105,7 @@ public class ActualMainActivity extends Activity implements LoaderManager.Loader
     }
 
 
-    // Called when a new Loader needs to be created
-    @Override
-    public android.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new android.content.CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                PROJECTION, SELECTION, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " COLLATE LOCALIZED ASC");
-    }
 
-    // Called when a previously created loader has finished loading
-    @Override
-    public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in.  (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.changeCursor(data);
-    }
-
-    // Called when a previously created loader is reset, making the data unavailable
-    @Override
-    public void onLoaderReset(android.content.Loader<Cursor> loader) {
-    // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        mAdapter.changeCursor(null);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -172,12 +118,10 @@ public class ActualMainActivity extends Activity implements LoaderManager.Loader
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    permissionGranted = true;
                     loadContacts();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    permissionGranted = false;
                 }
             }
 
