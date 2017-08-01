@@ -2,31 +2,24 @@ package com.apps.pixelarium.contactemp;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ActualMainActivity extends Activity {
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private ArrayList<DataModel> alContacts;
+    private List<DataModel> alContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +44,7 @@ public class ActualMainActivity extends Activity {
     private void readContacts() {
         ContentResolver cr = this.getContentResolver(); //Activity/Application android.content.Context
         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-        if(cursor.moveToFirst())
-        {
+        if(cursor.moveToFirst()) {
             alContacts = new ArrayList<DataModel>();
             do
             {
@@ -72,6 +64,7 @@ public class ActualMainActivity extends Activity {
 
             } while (cursor.moveToNext()) ;
         }
+        Collections.sort(alContacts);
     }
 
     private void requestPermission() {
