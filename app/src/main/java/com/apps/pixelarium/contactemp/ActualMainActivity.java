@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +22,14 @@ public class ActualMainActivity extends Activity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private List<DataModel> alContacts;
 
+    ListView listView;
+    private static CustomAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actual_main);
-
+        listView=(ListView)findViewById(R.id.list);
         loadContacts();
 
     }
