@@ -121,6 +121,7 @@ public class TemporizerActivity extends AppCompatActivity {
         @Override
         public void onDateChanged(DatePicker view, int year, int month, int day) {
             Toast.makeText(TemporizerActivity.this, year+"."+month+"."+day, Toast.LENGTH_SHORT).show();
+            //TODO save date
         }
     }
     private ArrayList<DataModel> readProgrammedContacts() {
