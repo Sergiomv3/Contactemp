@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.apps.pixelarium.contactemp.TemporizerActivity">
+    tools:context="com.apps.pixelarium.contactemp.TemporizerActivity"
+    >
 
     <ImageView
         android:id="@+id/imageView2"
@@ -55,7 +56,8 @@
         android:layout_marginLeft="32dp"
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_editor_absoluteY="131dp" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
     <TextView
         android:id="@+id/textView4"
@@ -69,6 +71,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/datePicker" />
+        app:layout_constraintTop_toBottomOf="@+id/datePicker"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp" />
 
 </android.support.constraint.ConstraintLayout>

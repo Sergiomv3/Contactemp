@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActualMainActivity" />
-        <activity android:name=".TemporizerActivity"></activity>
+        <activity android:name=".TemporizerActivity"
+            android:parentActivityName=".TemporizerActivity"></activity>
     </application>
 
 </manifest>
