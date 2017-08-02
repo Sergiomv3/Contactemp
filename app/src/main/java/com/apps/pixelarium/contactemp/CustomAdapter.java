@@ -70,11 +70,10 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
 
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtNumber.setText(dataModel.getNumber());
-        /*TODO set image if contact is programmed*/
         if(dataModel.isProgrammed()){
-            //viewHolder.imageView.setImageDrawable(R.drawable.on);
+            viewHolder.imageView.setImageResource(R.drawable.timer);
         }else{
-            //viewHolder.imageView.setImageDrawable(R.drawable.off);
+            viewHolder.imageView.setImageDrawable(null);
         }
 
         // Return the completed view to render on screen

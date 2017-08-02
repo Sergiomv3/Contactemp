@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +18,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,9 +29,10 @@ import java.util.List;
 
 public class ActualMainActivity extends Activity {
 
+    private static final String TAG = "programmedContacts";
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private ArrayList<DataModel> alContacts;
-
+    private ArrayList<DataModel> programmedContacts;
     ListView listView;
     private static CustomAdapter adapter;
 
@@ -35,8 +42,9 @@ public class ActualMainActivity extends Activity {
         setContentView(R.layout.activity_actual_main);
 
         loadContacts();
-        alContacts = fetchProgrammedContacts(alContacts);
-
+        if(alContacts == null){
+            alContacts = new ArrayList<DataModel>();
+        }
         listView=(ListView)findViewById(R.id.list);
         adapter= new CustomAdapter(alContacts,getApplicationContext());
 
@@ -51,10 +59,35 @@ public class ActualMainActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        alContacts = fetchProgrammedContacts(alContacts);
+
     }
 
     private ArrayList<DataModel> fetchProgrammedContacts(ArrayList<DataModel> alContacts) {
-        //TODO Compare and fetch contacts from saved of programmed contacts against actual contact list.
+        if(readProgrammedContacts() == null){
+            programmedContacts = new ArrayList<DataModel>();
+        }else{
+            programmedContacts = readProgrammedContacts();
+            for (int i = 0; i <alContacts.size() ; i++) {
+                alContacts.get(i).setProgrammed(false);
+            }
+            for (int i = 0; i <alContacts.size() ; i++) {
+                for (int j = 0; j <programmedContacts.size() ; j++) {
+                    if(alContacts.get(i).getNumber().equals(programmedContacts.get(j).getNumber())){
+                        alContacts.get(i).setProgrammed(true);
+                        alContacts.get(i).setProgrammedDate(programmedContacts.get(j).getProgrammedDate());
+                    }
+                }
+            }
+            adapter.notifyDataSetChanged();
+        }
         return alContacts;
     }
 
@@ -149,6 +182,13 @@ public class ActualMainActivity extends Activity {
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+    private ArrayList<DataModel> readProgrammedContacts() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Gson gson = new Gson();
+        String json = sharedPrefs.getString(TAG, null);
+        Type type = new TypeToken<ArrayList<DataModel>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 
 

@@ -1,6 +1,7 @@
 package com.apps.pixelarium.contactemp;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 /**
  * Created by smarti42 on 01/08/2017.
@@ -10,6 +11,15 @@ public class DataModel implements Comparable<DataModel>, Serializable{
 
     private String name;
     private String number;
+    private Calendar programmedDate;
+
+    public Calendar getProgrammedDate() {
+        return programmedDate;
+    }
+
+    public void setProgrammedDate(Calendar programmedDate) {
+        this.programmedDate = programmedDate;
+    }
 
     public boolean isProgrammed() {
         return isProgrammed;
