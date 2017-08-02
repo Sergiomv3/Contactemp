@@ -29,21 +29,10 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
     private static class ViewHolder {
         TextView txtName;
         TextView txtNumber;
-
+        ImageView imageView;
     }
     @Override
     public void onClick(View view) {
-//        int position=(Integer) v.getTag();
-//        Object object= getItem(position);
-//        DataModel dataModel=(DataModel)object;
-//
-//        switch (v.getId())
-//        {
-//            case R.id.item_info:
-//                Snackbar.make(v, "Release date " +dataModel.getFeature(), Snackbar.LENGTH_LONG)
-//                        .setAction("No action", null).show();
-//                break;
-//        }
         Toast.makeText(getContext(), "HAS PULSADO UN ELEMENTO", Toast.LENGTH_LONG).show();
     }
     public CustomAdapter(ArrayList<DataModel> data, Context context) {
@@ -67,6 +56,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
             convertView = inflater.inflate(R.layout.row_item, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.textview_name);
             viewHolder.txtNumber = (TextView) convertView.findViewById(R.id.textview_number);
+            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.item_info);
 
 
 
@@ -80,9 +70,16 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
 
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtNumber.setText(dataModel.getNumber());
+        /*TODO set image if contact is programmed*/
+        if(dataModel.isProgrammed()){
+            //viewHolder.imageView.setImageDrawable(R.drawable.on);
+        }else{
+            //viewHolder.imageView.setImageDrawable(R.drawable.off);
+        }
 
         // Return the completed view to render on screen
         return convertView;
     }
+
 
 }

@@ -35,6 +35,7 @@ public class ActualMainActivity extends Activity {
         setContentView(R.layout.activity_actual_main);
 
         loadContacts();
+        alContacts = fetchProgrammedContacts(alContacts);
 
         listView=(ListView)findViewById(R.id.list);
         adapter= new CustomAdapter(alContacts,getApplicationContext());
@@ -50,7 +51,11 @@ public class ActualMainActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
 
+    private ArrayList<DataModel> fetchProgrammedContacts(ArrayList<DataModel> alContacts) {
+        //TODO Compare and fetch contacts from saved of programmed contacts against actual contact list.
+        return alContacts;
     }
 
     private void loadContacts() {
