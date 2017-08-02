@@ -1,10 +1,12 @@
 package com.apps.pixelarium.contactemp;
 
+import java.io.Serializable;
+
 /**
  * Created by smarti42 on 01/08/2017.
  */
 
-public class DataModel implements Comparable<DataModel> {
+public class DataModel implements Comparable<DataModel>, Serializable{
 
     private String name;
     private String number;

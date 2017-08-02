@@ -3,6 +3,7 @@ package com.apps.pixelarium.contactemp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
@@ -44,8 +45,9 @@ public class ActualMainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 DataModel dataModel= alContacts.get(position);
-
-                Toast.makeText(getApplicationContext(), "Nombre: "+dataModel.getName(),Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(), TemporizerActivity.class);
+                intent.putExtra("dataModel", dataModel);
+                startActivity(intent);
             }
         });
 

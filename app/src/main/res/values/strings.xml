@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Contactemp</string>
     <string name="mainString">Elige un contacto para hacerlo temporal</string>
+    <string name="checkBoxString">Programar eliminación de este contacto</string>
+    <string name="worryMsgString">Te avisaremos con una notificación antes del borrado</string>
 </resources>
