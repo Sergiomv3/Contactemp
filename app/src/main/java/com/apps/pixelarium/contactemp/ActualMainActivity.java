@@ -173,6 +173,23 @@ public class ActualMainActivity extends Activity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     loadContacts();
+                    if(alContacts == null){
+                        alContacts = new ArrayList<DataModel>();
+                    }
+                    listView=(ListView)findViewById(R.id.list);
+                    adapter= new CustomAdapter(alContacts,getApplicationContext());
+
+                    listView.setAdapter(adapter);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            DataModel dataModel= alContacts.get(position);
+                            Intent intent = new Intent(getApplicationContext(), TemporizerActivity.class);
+                            intent.putExtra("dataModel", dataModel);
+                            startActivity(intent);
+                        }
+                    });
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
