@@ -1,10 +1,23 @@
 package com.apps.pixelarium.contactemp;
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -18,6 +31,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class TemporizerActivity extends AppCompatActivity {
     private static final String TAG = "programmedContacts";
@@ -37,6 +55,7 @@ public class TemporizerActivity extends AppCompatActivity {
         textviewNumber = (TextView)findViewById(R.id.textview_number);
         checkBox = (CheckBox)findViewById(R.id.checkBox);
         datePicker = (DatePicker)findViewById(R.id.datePicker);
+
 
         /*Print data contact*/
         textviewName.setText(dataModel.getName());
@@ -69,6 +88,8 @@ public class TemporizerActivity extends AppCompatActivity {
                     dataModel.setProgrammedDate(getDatePickerDate());
                     programmedContacts.add(dataModel);
                     saveProgrammedContacts();
+                    scheduleTask();
+
                 }else{
                     datePicker.setVisibility(View.INVISIBLE);
                     dataModel.setProgrammed(false);
@@ -83,6 +104,10 @@ public class TemporizerActivity extends AppCompatActivity {
 
         readProgrammedContacts();
 
+    }
+
+    private void scheduleTask() {
+        scheduleNotification(getApplicationContext(),5000,1);
     }
 
     private Calendar getDatePickerDate() {
@@ -120,8 +145,13 @@ public class TemporizerActivity extends AppCompatActivity {
     public class MyOnDateChangeListener implements DatePicker.OnDateChangedListener {
         @Override
         public void onDateChanged(DatePicker view, int year, int month, int day) {
-            Toast.makeText(TemporizerActivity.this, year+"."+month+"."+day, Toast.LENGTH_SHORT).show();
-            //TODO save date
+            for (int i = 0; i <programmedContacts.size() ; i++) {
+                if(programmedContacts.get(i).getNumber().equals(dataModel.getNumber())){
+                    programmedContacts.get(i).setProgrammedDate(getDatePickerDate());
+                    saveProgrammedContacts();
+                    break;
+                }
+            }
         }
     }
     private ArrayList<DataModel> readProgrammedContacts() {
@@ -137,4 +167,20 @@ public class TemporizerActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
     }
+
+    //TODO https://stackoverflow.com/questions/25713157/generate-int-unique-id-as-android-notification-id
+    // TODO https://stackoverflow.com/questions/36902667/how-to-schedule-notification-in-android
+    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in millis) from current time you want to schedule the notification
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.timer)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        synchronized (mBuilder){
+            notificationManager.notify(1, mBuilder.build());
+        }
+    }
+
 }

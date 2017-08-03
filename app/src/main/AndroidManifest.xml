@@ -22,6 +22,13 @@
         <activity android:name=".ActualMainActivity" />
         <activity android:name=".TemporizerActivity"
             android:parentActivityName=".TemporizerActivity"></activity>
+        <receiver android:name=".WakefulReceiver"/>
+        <receiver android:name=".BootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
